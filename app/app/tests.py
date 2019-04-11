@@ -1,8 +1,9 @@
 from django.test import TestCase
 from .calc import add, subtract
 
-class CalcTests(TestCase):
 
+class CalcTests(TestCase):
+    """Class for test cases"""
     def test_add_numbers(self):
         """Test that two numbers are added together"""
         self.assertEqual(add(10, 20), 30)
