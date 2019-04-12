@@ -15,9 +15,11 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
 
+    is_testing = 'test' in sys.argv
+
     if is_testing:
         import coverage
-        cov = coverage.coverage(source=['app'], omit=['*/tests/*'])
+        cov = coverage.coverage(source=['core'], omit=['*/tests/*'])
         cov.set_option('report:show_missing', True)
         cov.erase()
         cov.start()
