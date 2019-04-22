@@ -47,7 +47,7 @@ class ModelTests(TestCase):
     def test_tag_str(self):
         """Test the tag string representation."""
         tag = models.Tag.objects.create(
-            useer=sample_user(),
+            user=sample_user(),
             name='Vegen'
         )
 
