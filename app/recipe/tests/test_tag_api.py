@@ -21,3 +21,28 @@ class PublicTagsApiTest(TestCase):
         res = self.client.get(TAGS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PrivateTagsApiTest(TestCase):
+    """Test authorized user Tags API."""
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            'test@gmail.com',
+            'testpassword'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(self.user)
+
+    def test_retrieve_tags(self):
+        """Test retrieving tags."""
+        Tags.object.create(user=self.user, name='Vegan')
+        Tags.object.create(user=self.user, name='Dessert')
+
+        res = self.client.get(TAGS_URL)
+
+        tags = Tag.objects.all().order_by('-name')
+        serializer = TagSerializer(tags, many=True)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
