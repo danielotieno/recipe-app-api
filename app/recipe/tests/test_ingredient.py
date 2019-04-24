@@ -46,3 +46,18 @@ class PrivateIngredientsApiTest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
+
+    def test_ingredients_limted_to_user(self):
+        """Test that ingredients return are for authenticated user."""
+        user2 = get_user_model().objects.create_user(
+            'user@gmail.com',
+            'userpassword'
+        )
+        Ingredient.objects.create(user=user2, name='Vineger')
+        ingredient = Ingredient.objects.create(user=self.user, name='Tumeric')
+
+        res = self.client.get(INGREDIENTS_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 1)
+        self.assertEqual(res.data[0]['name'], ingredient.name)
