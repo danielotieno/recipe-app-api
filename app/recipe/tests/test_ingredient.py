@@ -21,3 +21,28 @@ class PublicIngredientsApiTest(TestCase):
         res = self.client.get(INGREDIENTS_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PrivateIngredientsApiTest(TestCase):
+    """Test the private user Ingredients API."""
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            'test@gmail.com',
+            'testpassword'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(self.user)
+
+    def test_retrieve_ingredient_list(self):
+        """Test retrieving ingredient list."""
+        Ingredient.objects.create(user=self.user, name='Cucumber')
+        Ingredient.objects.create(user=self.user, name='Salt')
+
+        res = self.client.get(INGREDIENTS_URL)
+
+        ingredients = Ingredient.objects.all().order_by('-name')
+        serializer = IngredientSerializer(ingredients, many=True)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, serializer.data)
