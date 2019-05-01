@@ -188,14 +188,14 @@ class PrivateRecipeApiTests(TestCase):
         recipe = sample_recipe(user=self.user)
         recipe.tags.add(sample_tag(user=self.user))
 
-        paylaod = {
+        payload = {
             'title': 'Sphagetti carbonare',
             'time_minutes': 20,
             'price': 50.00
         }
 
         url = detail_url(recipe.id)
-        self.client.put(url, paylaod)
+        self.client.put(url, payload)
 
         recipe.refresh_from_db()
 
