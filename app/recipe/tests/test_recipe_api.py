@@ -250,3 +250,28 @@ class RecipeImageUploadTests(TestCase):
         res = self.client.post(url, {'image': 'notimage'}, format='multipart')
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_filter_recipe_by_tags(self):
+        """Test returning recipes with specific tags."""
+        recipe_one = sample_recipe(user=self.user, title='Thai Vegetable')
+        recipe_two = sample_recipe(user=self.user, title='Chapati Maharagwe')
+        tag1 = sample_tag(user=self.user, name='Vegan')
+        tag2 = sample_tag(user=self.user, name='Vegeterian')
+
+        recipe_one.tags.add(tag1)
+        recipe_two.tags.add(tag2)
+
+        recipe_three = sample_recipe(user=self.user, title='Fish and Chips')
+
+        res = self.client.get(
+            RECIPES_URL,
+            {'tags': f'{tag1.id}, {tag2.id}'}
+        )
+
+        serializer_one = RecipeSerializer(recipe_one)
+        serializer_two = RecipeSerializer(recipe_two)
+        serializer_three = RecipeSerializer(recipe_three)
+
+        self.assertIn(serializer_one.data, res.data)
+        self.assertIn(serializer_two.data, res.data)
+        self.assertNotIn(serializer_three.data, res.data)
