@@ -215,7 +215,7 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(len(tags), 0)
 
 
-class RecipeImageUploadTests(self):
+class RecipeImageUploadTests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
