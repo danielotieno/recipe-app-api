@@ -275,3 +275,29 @@ class RecipeImageUploadTests(TestCase):
         self.assertIn(serializer_one.data, res.data)
         self.assertIn(serializer_two.data, res.data)
         self.assertNotIn(serializer_three.data, res.data)
+
+    def test_filter_recipe_by_ingredients(self):
+        """Test returning recipes with specific ingredients."""
+        recipe_one = sample_recipe(user=self.user, title='Posh Beans')
+        recipe_two = sample_recipe(user=self.user, title='Chicken')
+        ingredient1 = sample_ingredient(user=self.user, name='Feta Cheese')
+        ingredient2 = sample_ingredient(user=self.user, name='Chicken Fry')
+
+        recipe_one.ingredients.add(ingredient1)
+        recipe_two.ingredients.add(ingredient2)
+
+        recipe_three = sample_recipe(
+            user=self.user, title='Steak and Mushroom')
+
+        res = self.client.get(
+            RECIPES_URL,
+            {'ingredients': f'{ingredient1.id}, {ingredient2.id}'}
+        )
+
+        serializer_one = RecipeSerializer(recipe_one)
+        serializer_two = RecipeSerializer(recipe_two)
+        serializer_three = RecipeSerializer(recipe_three)
+
+        self.assertIn(serializer_one.data, res.data)
+        self.assertIn(serializer_two.data, res.data)
+        self.assertNotIn(serializer_three.data, res.data)
